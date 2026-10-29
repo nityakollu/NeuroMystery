@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "title": "NeuroMystery: The Blackwood Manor Disappearance",
+    "setting": "Blackwood Manor",
+    "victim": "Arthur Blackwood",
+    "objective": "Discover what happened to Arthur Blackwood by exploring the mansion, collecting evidence, and questioning its ghosts."
+  },
+
+  "world_truth": {
+    "arthur_disappeared": true,
+    "arthur_was_murdered": false,
+    "eleanor_entered_library": true,
+    "thomas_entered_study": true,
+    "clara_saw_arthur_in_library": true,
+    "library_clock_incorrect": true,
+    "secret_passage_exists": true,
+    "arthur_used_secret_passage": true
+  },
+
+  "rooms": {
+    "entrance_hall": {
+      "name": "Entrance Hall",
+      "description": "A cold marble hall lit by a flickering chandelier. Portraits of the Blackwood family cover the walls.",
+      "connections": ["library", "study", "drawing_room"],
+      "characters": [],
+      "clues": []
+    },
+
+    "library": {
+      "name": "Library",
+      "description": "Dust-covered bookshelves surround a large fireplace. A stopped grandfather clock stands against the wall.",
+      "connections": ["entrance_hall", "secret_passage"],
+      "characters": ["eleanor"],
+      "clues": ["torn_glove", "broken_clock"]
+    },
+
+    "study": {
+      "name": "Arthur's Study",
+      "description": "Arthur's desk remains covered with papers from the night he disappeared. One drawer has been forced open.",
+      "connections": ["entrance_hall"],
+      "characters": ["thomas"],
+      "clues": ["bloodied_knife", "arthur_letter"]
+    },
+
+    "drawing_room": {
+      "name": "Drawing Room",
+      "description": "An abandoned piano sits beneath faded family portraits. The room feels strangely untouched.",
+      "connections": ["entrance_hall"],
+      "characters": ["clara"],
+      "clues": ["family_photo"]
+    },
+
+    "secret_passage": {
+      "name": "Secret Passage",
+      "description": "A narrow stone corridor hidden behind one of the library bookshelves. Fresh scratches mark an old iron door.",
+      "connections": ["library"],
+      "characters": [],
+      "clues": ["muddy_footprints"],
+      "locked": true,
+      "unlock_requires": "arthur_letter"
+    }
+  },
+
+  "characters": {
+    "eleanor": {
+      "name": "Eleanor Blackwood",
+      "role": "Arthur's wife",
+      "personality": "Calm, elegant, guarded, and reluctant to discuss the night Arthur disappeared.",
+
+      "knowledge": [
+        "Arthur was worried about something before his disappearance.",
+        "A secret passage exists behind the library shelves.",
+        "Eleanor entered the library that night."
+      ],
+
+      "beliefs": [
+        "Thomas was hiding something from Arthur."
+      ],
+
+      "claims": {
+        "library": "I never entered the library that night.",
+        "arthur": "Arthur was behaving strangely, but he never told me why.",
+        "thomas": "Thomas and Arthur argued earlier that evening."
+      }
+    },
+
+    "thomas": {
+      "name": "Thomas Vale",
+      "role": "Groundskeeper",
+      "personality": "Defensive and suspicious, but not cruel. He becomes nervous when asked about Arthur's study.",
+
+      "knowledge": [
+        "Thomas entered Arthur's study that night.",
+        "Thomas found a bloodied knife inside the study.",
+        "Arthur was still alive when Thomas last saw him."
+      ],
+
+      "beliefs": [
+        "Eleanor knew more about Arthur's plans than she admitted."
+      ],
+
+      "claims": {
+        "study": "I never went inside Arthur's study that night.",
+        "knife": "I don't know where that knife came from.",
+        "arthur": "Arthur was alive the last time I saw him."
+      }
+    },
+
+    "clara": {
+      "name": "Clara Blackwood",
+      "role": "Arthur's younger sister",
+      "personality": "Emotional, uncertain, and troubled by fragmented memories of the night Arthur disappeared.",
+
+      "knowledge": [
+        "Clara saw Arthur near the library.",
+        "Clara heard someone moving behind the library wall."
+      ],
+
+      "beliefs": [
+        "Clara believes she saw Arthur in the library at midnight.",
+        "Clara believes Thomas may have hurt Arthur."
+      ],
+
+      "claims": {
+        "arthur": "I saw Arthur in the library at midnight.",
+        "passage": "I heard something behind the library wall, but I thought I imagined it.",
+        "thomas": "I was always afraid of Thomas."
+      }
+    }
+  },
+
+  "clues": {
+    "torn_glove": {
+      "name": "Eleanor's Torn Glove",
+      "location": "library",
+      "description": "A torn black glove embroidered with Eleanor's initials lies beneath a library chair.",
+      "reveals": "Eleanor was inside the library despite claiming that she never entered it."
+    },
+
+    "broken_clock": {
+      "name": "Broken Grandfather Clock",
+      "location": "library",
+      "description": "The grandfather clock is stopped and its mechanism appears damaged. Its displayed time cannot be trusted.",
+      "reveals": "Statements based on the mansion's clocks may have incorrect times."
+    },
+
+    "bloodied_knife": {
+      "name": "Bloodied Knife",
+      "location": "study",
+      "description": "An old knife with a dark dried stain is hidden beneath Arthur's desk.",
+      "reveals": "Something violent may have happened in Arthur's study, but the knife alone does not identify what happened."
+    },
+
+    "arthur_letter": {
+      "name": "Arthur's Unfinished Letter",
+      "location": "study",
+      "description": "An unfinished letter mentions a hidden route behind the library shelves.",
+      "reveals": "A secret passage can be accessed through the library."
+    },
+
+    "family_photo": {
+      "name": "Blackwood Family Photograph",
+      "location": "drawing_room",
+      "description": "A faded photograph shows Arthur, Eleanor, and Clara together several years before the disappearance.",
+      "reveals": "The three Blackwoods had a close relationship before tensions developed in the mansion."
+    },
+
+    "muddy_footprints": {
+      "name": "Muddy Footprints",
+      "location": "secret_passage",
+      "description": "Old footprints lead through the passage toward an exterior door.",
+      "reveals": "Someone left Blackwood Manor through the hidden passage on the night Arthur disappeared."
+    }
+  },
+
+  "contradictions": [
+    {
+      "id": "eleanor_library",
+      "character": "eleanor",
+      "claim": "library",
+      "required_clue": "torn_glove",
+      "explanation": "Eleanor claims she never entered the library, but her torn glove was found inside it."
+    },
+
+    {
+      "id": "thomas_study",
+      "character": "thomas",
+      "claim": "study",
+      "required_clue": "bloodied_knife",
+      "explanation": "Thomas denies entering Arthur's study, but his knowledge of the hidden knife suggests that he was there."
+    }
+  ]
+}
