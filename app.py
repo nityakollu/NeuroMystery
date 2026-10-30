@@ -42,10 +42,24 @@ game = st.session_state.game
 # --------------------------------------------------
 
 def format_result(result):
+    text = _format_result_body(result)
+ 
+    # Messages from the rule system (rooms unlocking, stories changing, ...)
+    for event in result.get("events", []):
+        text += f"\n\n🔓 *{event}*"
+ 
+    return text
+ 
+ 
+def _format_result_body(result):
     if not result.get("success"):
         return result.get("message", "That action could not be completed.")
-
+ 
     result_type = result.get("type")
+ 
+    if result_type == "solve":
+        prefix = "🏁 **Case Solved**\n\n" if result.get("solved") else ""
+        return prefix + result["message"]
 
     if result_type == "look":
         text = f"**{result['room']}**\n\n{result['description']}"
@@ -94,7 +108,7 @@ def format_result(result):
 
     if result_type == "confront":
         return (
-            f"⚠️ **Contradiction Confirmed**\n\n"
+            f"⚠️ **Contradiction Confirmed: {result['outcome']}**\n\n"
             f"{result['contradiction']}\n\n"
             f"**{result['character']}**\n\n"
             f"{result['response']}"
@@ -193,7 +207,8 @@ with main:
     st.caption(
         "Examples: “Go to the library” • “Search the room” • "
         "“Ask Eleanor about the library” • "
-        "“Confront Eleanor about the torn glove”"
+        "“Confront Eleanor about the torn glove” • "
+        "“Solve: Arthur wasn't murdered, he escaped through the passage”"
     )
 
 
@@ -210,22 +225,38 @@ with sidebar:
         st.caption("No evidence discovered yet.")
     else:
         for clue in evidence:
-            with st.expander(clue["name"]):
+            label = clue["name"] + (" (misleading)" if clue.get("discredited") else "")
+            with st.expander(label):
                 st.write(clue["description"])
-
+ 
     st.divider()
-
+ 
     st.subheader("⚠️ Contradictions")
-
-    contradiction_ids = game.state.discovered_contradictions
-
-    if not contradiction_ids:
+ 
+    contradictions = game.state.get_discovered_contradictions()
+ 
+    if not contradictions:
         st.caption("No contradictions discovered yet.")
     else:
-        for contradiction in game.state.mystery["contradictions"]:
-            if contradiction["id"] in contradiction_ids:
-                st.write(f"• {contradiction['explanation']}")
-
+        for contradiction in contradictions:
+            status = contradiction.get("outcome", "Not yet confronted")
+            st.write(f"• {contradiction['explanation']}")
+            st.caption(f"Status: {status}")
+ 
+    st.divider()
+ 
+    st.subheader("🗣️ Statements")
+ 
+    statements = game.state.get_statement_log()
+ 
+    if not statements:
+        st.caption("No one has told you anything yet.")
+    else:
+        for entry in statements:
+            name = game.state.get_character(entry["character"])["name"]
+            tag = " *(revised)*" if entry["revised"] else ""
+            st.markdown(f"**{name}** on *{entry['topic']}*{tag}: “{entry['text']}”")
+ 
     st.divider()
 
     st.subheader("🗺️ Locations")

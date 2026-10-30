@@ -3,20 +3,114 @@
     "title": "NeuroMystery: The Blackwood Manor Disappearance",
     "setting": "Blackwood Manor",
     "victim": "Arthur Blackwood",
+    "start_room": "entrance_hall",
     "objective": "Discover what happened to Arthur Blackwood by exploring the mansion, collecting evidence, and questioning its ghosts."
   },
-
-  "world_truth": {
-    "arthur_disappeared": true,
-    "arthur_was_murdered": false,
-    "eleanor_entered_library": true,
-    "thomas_entered_study": true,
-    "clara_saw_arthur_in_library": true,
-    "library_clock_incorrect": true,
-    "secret_passage_exists": true,
-    "arthur_used_secret_passage": true
+ 
+  "facts": {
+    "eleanor_in_library": {
+      "text": "Eleanor was in the library that night",
+      "negated": "Eleanor never entered the library that night"
+    },
+    "thomas_in_study": {
+      "text": "Thomas was inside Arthur's study that night",
+      "negated": "Thomas never went inside Arthur's study that night"
+    },
+    "thomas_found_knife": {
+      "text": "Thomas found the knife in Arthur's study",
+      "negated": "Thomas knows nothing about the knife"
+    },
+    "thomas_argued_with_arthur": {
+      "text": "Thomas and Arthur argued that evening",
+      "negated": "Thomas and Arthur did not argue that evening"
+    },
+    "thomas_hid_something_from_arthur": {
+      "text": "Thomas was hiding something from Arthur",
+      "negated": "Thomas was hiding nothing from Arthur"
+    },
+    "arthur_harmed_in_study": {
+      "text": "Arthur was attacked in his study",
+      "negated": "Arthur was unhurt when he left his study"
+    },
+    "arthur_in_library_that_night": {
+      "text": "Arthur was in the library that night",
+      "negated": "Arthur was never in the library that night"
+    },
+    "arthur_in_library_at_midnight": {
+      "text": "Arthur was in the library at midnight",
+      "negated": "Arthur was not in the library at midnight"
+    },
+    "library_clock_correct": {
+      "text": "the library clock was showing the correct time",
+      "negated": "the library clock was not showing the correct time"
+    },
+    "passage_exists": {
+      "text": "a secret passage runs behind the library shelves",
+      "negated": "there is no secret passage behind the library shelves"
+    },
+    "eleanor_knew_of_passage": {
+      "text": "Eleanor knew about the secret passage",
+      "negated": "Eleanor did not know about the secret passage"
+    },
+    "arthur_planned_to_leave": {
+      "text": "Arthur was planning to leave the manor",
+      "negated": "Arthur had no plans to leave the manor"
+    },
+    "someone_left_via_passage": {
+      "text": "someone left the manor through the secret passage",
+      "negated": "nobody left the manor through the secret passage"
+    },
+    "arthur_left_via_passage": {
+      "text": "Arthur left the manor through the secret passage",
+      "negated": "Arthur did not leave through the secret passage"
+    },
+    "arthur_murdered": {
+      "text": "Arthur was murdered",
+      "negated": "Arthur was not murdered"
+    }
   },
-
+ 
+  "world_truth": {
+    "eleanor_in_library": true,
+    "thomas_in_study": true,
+    "thomas_found_knife": true,
+    "thomas_argued_with_arthur": true,
+    "thomas_hid_something_from_arthur": true,
+    "arthur_harmed_in_study": false,
+    "arthur_in_library_that_night": true,
+    "arthur_in_library_at_midnight": false,
+    "library_clock_correct": false,
+    "passage_exists": true,
+    "eleanor_knew_of_passage": true,
+    "arthur_planned_to_leave": true,
+    "someone_left_via_passage": true,
+    "arthur_left_via_passage": true,
+    "arthur_murdered": false
+  },
+ 
+  "inferences": [
+    {
+      "id": "arthur_escaped",
+      "if": {
+        "passage_exists": true,
+        "arthur_planned_to_leave": true,
+        "someone_left_via_passage": true
+      },
+      "then": {
+        "arthur_left_via_passage": true
+      }
+    },
+    {
+      "id": "escape_means_not_murdered",
+      "if": {
+        "arthur_left_via_passage": true
+      },
+      "then": {
+        "arthur_murdered": false
+      }
+    }
+  ],
+ 
   "rooms": {
     "entrance_hall": {
       "name": "Entrance Hall",
@@ -25,7 +119,7 @@
       "characters": [],
       "clues": []
     },
-
+ 
     "library": {
       "name": "Library",
       "description": "Dust-covered bookshelves surround a large fireplace. A stopped grandfather clock stands against the wall.",
@@ -33,15 +127,15 @@
       "characters": ["eleanor"],
       "clues": ["torn_glove", "broken_clock"]
     },
-
+ 
     "study": {
       "name": "Arthur's Study",
       "description": "Arthur's desk remains covered with papers from the night he disappeared. One drawer has been forced open.",
       "connections": ["entrance_hall"],
       "characters": ["thomas"],
-      "clues": ["bloodied_knife", "arthur_letter"]
+      "clues": ["bloodied_knife", "arthur_letter", "groundskeeper_keys"]
     },
-
+ 
     "drawing_room": {
       "name": "Drawing Room",
       "description": "An abandoned piano sits beneath faded family portraits. The room feels strangely untouched.",
@@ -49,145 +143,243 @@
       "characters": ["clara"],
       "clues": ["family_photo"]
     },
-
+ 
     "secret_passage": {
       "name": "Secret Passage",
       "description": "A narrow stone corridor hidden behind one of the library bookshelves. Fresh scratches mark an old iron door.",
       "connections": ["library"],
       "characters": [],
       "clues": ["muddy_footprints"],
-      "locked": true,
-      "unlock_requires": "arthur_letter"
+      "locked": true
     }
   },
-
+ 
   "characters": {
     "eleanor": {
       "name": "Eleanor Blackwood",
       "role": "Arthur's wife",
       "personality": "Calm, elegant, guarded, and reluctant to discuss the night Arthur disappeared.",
-
-      "knowledge": [
-        "Arthur was worried about something before his disappearance.",
-        "A secret passage exists behind the library shelves.",
-        "Eleanor entered the library that night."
-      ],
-
-      "beliefs": [
-        "Thomas was hiding something from Arthur."
-      ],
-
+      "knows": {
+        "eleanor_in_library": true,
+        "eleanor_knew_of_passage": true,
+        "passage_exists": true
+      },
+      "believes": {
+        "thomas_hid_something_from_arthur": true
+      },
       "claims": {
-        "library": "I never entered the library that night.",
-        "arthur": "Arthur was behaving strangely, but he never told me why.",
-        "thomas": "Thomas and Arthur argued earlier that evening."
+        "library": {
+          "text": "I never entered the library that night.",
+          "asserts": { "eleanor_in_library": false },
+          "confession": "Eleanor's composure cracks. \"Fine. I was in the library that night. Arthur kept talking about something behind the shelves, and I went to see for myself. I didn't want anyone else to know it existed.\""
+        },
+        "arthur": {
+          "text": "Arthur was behaving strangely, but he never told me why.",
+          "asserts": {}
+        },
+        "thomas": {
+          "text": "Thomas and Arthur argued earlier that evening.",
+          "asserts": { "thomas_argued_with_arthur": true }
+        },
+        "passage": {
+          "text": "There is a passage behind the library shelves. Arthur showed it to me once, years ago. I swore I would never speak of it.",
+          "asserts": { "passage_exists": true, "eleanor_knew_of_passage": true },
+          "locked": true
+        }
       }
     },
-
+ 
     "thomas": {
       "name": "Thomas Vale",
       "role": "Groundskeeper",
       "personality": "Defensive and suspicious, but not cruel. He becomes nervous when asked about Arthur's study.",
-
-      "knowledge": [
-        "Thomas entered Arthur's study that night.",
-        "Thomas found a bloodied knife inside the study.",
-        "Arthur was still alive when Thomas last saw him."
-      ],
-
-      "beliefs": [
-        "Eleanor knew more about Arthur's plans than she admitted."
-      ],
-
+      "knows": {
+        "thomas_in_study": true,
+        "thomas_found_knife": true,
+        "thomas_argued_with_arthur": true,
+        "arthur_harmed_in_study": false
+      },
+      "believes": {
+        "eleanor_knew_of_passage": true
+      },
       "claims": {
-        "study": "I never went inside Arthur's study that night.",
-        "knife": "I don't know where that knife came from.",
-        "arthur": "Arthur was alive the last time I saw him."
+        "study": {
+          "text": "I never went inside Arthur's study that night.",
+          "asserts": { "thomas_in_study": false },
+          "confession": "Thomas lets out a long breath. \"All right. I went into the study. I was looking for Arthur after our argument. He wasn't there, but I found that knife under the desk and I panicked. I swear I never hurt him.\""
+        },
+        "knife": {
+          "text": "I don't know where that knife came from.",
+          "asserts": {}
+        },
+        "arthur": {
+          "text": "Arthur was alive and unhurt the last time I saw him.",
+          "asserts": { "arthur_harmed_in_study": false },
+          "stands_firm": "Thomas doesn't flinch. \"Look at that stain. It's old, older than that night. Arthur walked out of that study on his own two feet.\""
+        }
       }
     },
-
+ 
     "clara": {
       "name": "Clara Blackwood",
       "role": "Arthur's younger sister",
       "personality": "Emotional, uncertain, and troubled by fragmented memories of the night Arthur disappeared.",
-
-      "knowledge": [
-        "Clara saw Arthur near the library.",
-        "Clara heard someone moving behind the library wall."
-      ],
-
-      "beliefs": [
-        "Clara believes she saw Arthur in the library at midnight.",
-        "Clara believes Thomas may have hurt Arthur."
-      ],
-
+      "knows": {
+        "arthur_in_library_that_night": true
+      },
+      "believes": {
+        "arthur_in_library_at_midnight": true,
+        "library_clock_correct": true,
+        "arthur_harmed_in_study": true
+      },
       "claims": {
-        "arthur": "I saw Arthur in the library at midnight.",
-        "passage": "I heard something behind the library wall, but I thought I imagined it.",
-        "thomas": "I was always afraid of Thomas."
+        "arthur": {
+          "text": "I saw Arthur in the library at midnight. I remember the grandfather clock striking twelve.",
+          "asserts": { "arthur_in_library_at_midnight": true },
+          "based_on": { "library_clock_correct": true },
+          "confession": "Clara stares at the clock for a long moment. \"Broken? Then it wasn't midnight at all... it must have been much earlier. Before the noises behind the wall.\""
+        },
+        "passage": {
+          "text": "I heard something behind the library wall, but I thought I imagined it.",
+          "asserts": {}
+        },
+        "thomas": {
+          "text": "I was always afraid of Thomas.",
+          "asserts": {}
+        }
       }
     }
   },
-
+ 
   "clues": {
     "torn_glove": {
       "name": "Eleanor's Torn Glove",
       "location": "library",
+      "aliases": ["torn glove", "glove"],
       "description": "A torn black glove embroidered with Eleanor's initials lies beneath a library chair.",
-      "reveals": "Eleanor was inside the library despite claiming that she never entered it."
+      "reveals": "Eleanor was inside the library despite claiming that she never entered it.",
+      "supports": { "eleanor_in_library": true },
+      "reliable": true
     },
-
+ 
     "broken_clock": {
       "name": "Broken Grandfather Clock",
       "location": "library",
+      "aliases": ["broken clock", "grandfather clock", "clock"],
       "description": "The grandfather clock is stopped and its mechanism appears damaged. Its displayed time cannot be trusted.",
-      "reveals": "Statements based on the mansion's clocks may have incorrect times."
+      "reveals": "Statements based on the mansion's clocks may have incorrect times.",
+      "supports": { "library_clock_correct": false },
+      "reliable": true
     },
-
+ 
     "bloodied_knife": {
       "name": "Bloodied Knife",
       "location": "study",
+      "aliases": ["bloodied knife", "bloody knife", "knife"],
       "description": "An old knife with a dark dried stain is hidden beneath Arthur's desk.",
-      "reveals": "Something violent may have happened in Arthur's study, but the knife alone does not identify what happened."
+      "reveals": "Something violent may have happened in Arthur's study, but the knife alone does not identify what happened.",
+      "supports": { "arthur_harmed_in_study": true },
+      "reliable": false
     },
-
+ 
     "arthur_letter": {
       "name": "Arthur's Unfinished Letter",
       "location": "study",
-      "description": "An unfinished letter mentions a hidden route behind the library shelves.",
-      "reveals": "A secret passage can be accessed through the library."
+      "aliases": ["arthur's letter", "arthur letter", "unfinished letter", "letter"],
+      "description": "An unfinished letter to Eleanor mentions a hidden route behind the library shelves and Arthur's intention to leave before dawn.",
+      "reveals": "A secret passage can be accessed through the library, and Arthur meant to leave.",
+      "supports": { "passage_exists": true, "arthur_planned_to_leave": true },
+      "reliable": true
     },
-
+ 
+    "groundskeeper_keys": {
+      "name": "Groundskeeper's Key Ring",
+      "location": "study",
+      "aliases": ["groundskeeper's keys", "key ring", "keyring", "keys"],
+      "description": "A heavy ring of iron keys stamped 'T.V.' lies on the floor beside the forced drawer.",
+      "reveals": "Thomas Vale was inside Arthur's study.",
+      "supports": { "thomas_in_study": true },
+      "reliable": true
+    },
+ 
     "family_photo": {
       "name": "Blackwood Family Photograph",
       "location": "drawing_room",
+      "aliases": ["family photo", "photograph", "photo"],
       "description": "A faded photograph shows Arthur, Eleanor, and Clara together several years before the disappearance.",
-      "reveals": "The three Blackwoods had a close relationship before tensions developed in the mansion."
+      "reveals": "The three Blackwoods had a close relationship before tensions developed in the mansion.",
+      "supports": {},
+      "reliable": true
     },
-
+ 
     "muddy_footprints": {
       "name": "Muddy Footprints",
       "location": "secret_passage",
+      "aliases": ["muddy footprints", "footprints", "footprint"],
       "description": "Old footprints lead through the passage toward an exterior door.",
-      "reveals": "Someone left Blackwood Manor through the hidden passage on the night Arthur disappeared."
+      "reveals": "Someone left Blackwood Manor through the hidden passage on the night Arthur disappeared.",
+      "supports": { "someone_left_via_passage": true },
+      "reliable": true
     }
   },
-
-  "contradictions": [
+ 
+  "rules": [
     {
-      "id": "eleanor_library",
-      "character": "eleanor",
-      "claim": "library",
-      "required_clue": "torn_glove",
-      "explanation": "Eleanor claims she never entered the library, but her torn glove was found inside it."
+      "id": "letter_reveals_passage",
+      "when": [ { "has_clue": "arthur_letter" } ],
+      "then": [
+        { "unlock_room": "secret_passage" },
+        { "message": "Arthur's letter describes a hidden route behind the library shelves. The Secret Passage is now accessible from the Library." }
+      ]
     },
-
     {
-      "id": "thomas_study",
-      "character": "thomas",
-      "claim": "study",
-      "required_clue": "bloodied_knife",
-      "explanation": "Thomas denies entering Arthur's study, but his knowledge of the hidden knife suggests that he was there."
+      "id": "eleanor_opens_up_about_passage",
+      "when": [ { "confronted": "eleanor:library" } ],
+      "then": [
+        { "unlock_topic": "eleanor:passage" },
+        { "message": "Eleanor might be willing to talk about the passage now." }
+      ]
+    },
+    {
+      "id": "thomas_explains_knife",
+      "when": [ { "confronted": "thomas:study" } ],
+      "then": [
+        {
+          "revise_claim": {
+            "character": "thomas",
+            "topic": "knife",
+            "text": "I found that knife under Arthur's desk that night. The stain was already old and dry. I hid it because I knew how it would look.",
+            "asserts": { "thomas_found_knife": true }
+          }
+        },
+        { "establish_fact": { "fact": "thomas_found_knife", "value": true } },
+        { "message": "Thomas's story about the knife has changed. Ask him about it again." }
+      ]
     }
-  ]
+  ],
+ 
+  "solution": {
+    "summary": "Arthur Blackwood was never murdered. He planned his own disappearance and slipped out of the manor through the secret passage behind the library shelves. Eleanor, Thomas, and Clara each hid or misremembered part of that night, but none of them killed him.",
+    "facts": {
+      "arthur_murdered": {
+        "value": false,
+        "question": "Was Arthur murdered?",
+        "keywords_false": [
+          "not murdered", "wasn't murdered", "was not murdered", "never murdered",
+          "not killed", "wasn't killed", "was not killed", "never killed",
+          "survived", "still alive", "nobody killed", "no one killed"
+        ],
+        "keywords_true": ["murdered", "killed"]
+      },
+      "arthur_left_via_passage": {
+        "value": true,
+        "question": "How did Arthur leave the manor?",
+        "keywords_false": ["didn't leave", "did not leave", "never left"],
+        "keywords_true": [
+          "passage", "escaped", "fled", "ran away", "snuck out",
+          "left the manor", "left through", "left on his own"
+        ]
+      }
+    }
+  }
 }

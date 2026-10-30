@@ -5,6 +5,13 @@ class ActionParser:
     def parse(self, text):
         text = text.lower().strip()
 
+        # SOLVE (checked first: theories mention rooms like "passage")
+        if text.startswith(("solve", "accuse", "my theory", "theory", "conclusion")):
+            return {
+                "action": "solve",
+                "theory": self._parse_theory(text)
+            }
+
         # LOOK
         if text in ["look", "look around", "where am i"]:
             return {
@@ -103,32 +110,46 @@ class ActionParser:
         return None
 
     def _find_clue(self, text):
-        clue_aliases = {
-            "torn_glove": ["torn glove", "glove"],
-            "broken_clock": ["broken clock", "clock"],
-            "bloodied_knife": ["bloodied knife", "knife"],
-            "arthur_letter": [
-                "arthur's letter",
-                "arthur letter",
-                "letter"
-            ],
-            "family_photo": [
-                "family photo",
-                "photograph",
-                "photo"
-            ],
-            "muddy_footprints": [
-                "muddy footprints",
-                "footprints"
+        # Aliases now come from each clue's "aliases" list in mystery.json,
+        # so new clues work without editing the parser.
+        candidates = []
+ 
+        for clue_id, clue in self.mystery["clues"].items():
+            names = clue.get("aliases", []) + [
+                clue["name"].lower(),
+                clue_id.replace("_", " ")
             ]
-        }
-
-        for clue_id, aliases in clue_aliases.items():
-            for alias in aliases:
-                if alias in text:
-                    return clue_id
-
+ 
+            for alias in names:
+                candidates.append((alias.lower(), clue_id))
+ 
+        # Longest alias first, so "grandfather clock" beats "clock".
+        candidates.sort(key=lambda pair: len(pair[0]), reverse=True)
+ 
+        for alias, clue_id in candidates:
+            if alias in text:
+                return clue_id
+ 
         return None
+    
+    def _parse_theory(self, text):
+        """
+        Turn "solve: Arthur wasn't murdered, he escaped through the passage"
+        into {"arthur_murdered": False, "arthur_left_via_passage": True}
+        using the keyword lists in mystery.json -> solution -> facts.
+        (The LLM interpreter can replace this later and output the same dict.)
+        """
+        theory = {}
+        facts = self.mystery.get("solution", {}).get("facts", {})
+ 
+        for fact_id, spec in facts.items():
+            # Negative phrases first: "not murdered" also contains "murdered".
+            if any(k in text for k in spec.get("keywords_false", [])):
+                theory[fact_id] = False
+            elif any(k in text for k in spec.get("keywords_true", [])):
+                theory[fact_id] = True
+ 
+        return theory
 
     def _find_topic(self, text, character_id=None):
         if character_id:
